@@ -443,32 +443,45 @@ for (i=0;i<param.nx;i++)
 //*********************************************
 void creation_A(struct type_donneesc param,int NA, float dt, float **x,float **y,float **xv,float **yv,float **vol,float **A)
 {
+    float dx,dy;
 for(j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
         if(i==0&&j==0){
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(x[i][j]/2)+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(y[i][j]/2));
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(y[i][j]/2); 
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
+            //Coin bas gauche
+            dx= x[i+1][j]-x[i][j];
+            dy= y[i][j+1]-y[i][j];
+            a =  (dt*D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i][j]/2)+(dx)/(yv[i][j])+(dx)/(y[i][j]/2));
+            c = -(dt*D/vol[i][j])*(dx)/(y[i][j]/2); 
+            e=0; //Pris en compte dans B
         }
-        elif(i==0&&j!=0){
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(x[i][j]/2)+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(yv[i][j-1])); 
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j-1]);
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
+        elif(i==0&&j!=0){//Frontière gauche
+            a =  (dt*D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i][j]/2)+(dx)/(yv[i][j])+(dx)/(yv[i][j-1])); 
+            c = -(dt*D/vol[i][j])*(dx)/(yv[i][j-1]);
+            e=0;//Pris en compte dans B
         }
         elif(i!=0&&j==0){
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(xv[i-1][j])+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(y[i][j]/2));
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(y[i][j]/2);  
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i-1][j]);
+            //Frontière basse
+            a =  (dt*D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j])+(dx)/(y[i][j]/2));
+            c = 0; //Pris en compte dans B  
+            e = -(dt*D/vol[i][j])*(dy)/(xv[i-1][j]);
         }
-        else:
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(xv[i-1][j])+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(yv[i][j-1]));
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j-1]);
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i-1][j]);
+        elif(i==0&&j==param.ny-1)://Coin Haut Gauche
+            a =  (dt*D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j-1]));
+            c = -(dt*D/vol[i][j])*(dx)/(yv[i][j-1]);
+            e=0;//Pris en compte dans B
 
-       
+        else:
+            a =  (dt*D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j])+(dx)/(yv[i][j-1]));
+            c = -(dt*D/vol[i][j])*(dx)/(yv[i][j-1]);
+            e = -(dt*D/vol[i][j])*(dy)/(xv[i-1][j]);
         
-        b = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j]);
-        d = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i][j]);
+       
+        if(j==param.ny-1){//frontière haute
+        b=0;}
+        else{
+        b = -(dt*D/vol[i][j])*(dx)/(yv[i][j]);
+        }
+        d = -(dt*D/vol[i][j])*(dy)/(xv[i][j]);
 
         k = i+param.nx*j;
         A[k][k] = 1+a;
@@ -500,13 +513,25 @@ void creation_B(struct type_donneesc param, int NA, float dt, float **x, float *
 for (j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
         k = i+j*param.nx;
-        if(i==0&&j!=param.ny-1){
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
-            B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]+e*param.Tg);
+        if(i==0&&j!=param.ny-1&&j!=0){
+        //Frontiere Gauche
+            e = -(dt*D/vol[i][j])*(dy)/((x[i][j]/2)); 
+            B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]-e*param.Tg);
         }
-        elif(i!=0 && j==param.ny-1){
-            
+        elif(i!=0 && j==param.ny-1&&i!=param.nx-1){
+        //Frontiere Haut
+            B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]);
         }
+        elif(i==param.nx&& j!=0&&j!=param.ny-1){
+        //Frontiere Droite
+
+        }
+        elif(i!=0 && j==0&&i!=param.nx-1){
+        //Frontiere Bas
+            c = -(dt*D/vol[i][j])*(dx)/(y[i][j]/2);
+            B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]-c*param.Tb);
+        }
+
     }
 }
 
