@@ -495,7 +495,7 @@ for(j=0;j<param.ny;j++){
 void creation_B(struct type_donneesc param, int NA, float dt, float **x, float **y,float **xv,float **yv,float **vol, float **Fadv, float **T0, float *B)
 {
 
-	// to be completed
+	
 
 
 }

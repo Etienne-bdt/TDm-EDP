@@ -7,6 +7,7 @@
 #include"subf.h"
 #include"VTSW.h"
 #include"data.h"
+#include <gaussij.h>
 
 
 int main()
@@ -101,9 +102,20 @@ if((param.i_solver)==1)
 
   B=(float*)malloc((tailleMat)*sizeof(float*));
 
-  printf("not implemented\n");
-   // (to be completed)
 
+  creation_A(param,NA,dt,x,y,xv,yv,vol,A);
+  if(l=1;l<N;l++){
+  calc_flux_advc(param,x,y,xv,yv,Y,V,T0,Fadv);
+  creation_B(param,NA,dt,x,y,xv,yv,vol,T0,B);
+  GAUSSIJ(LV,A,B);
+  miseajour_T(param,T0,T1,B);
+      if((l%param.Nout)==0)
+      {
+      VTSWriterc((float)(l)*dt,l,param.nx+1,param.ny+1,x,y,T1,U,V,"int");
+      }
+  }
+  VTSWriterc((float)(N)*dt,N,param.nx+1,param.ny+1,x,y,T1,U,V,"end");
+  
   free(A);
   free(B);
   }
