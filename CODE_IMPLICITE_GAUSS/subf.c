@@ -504,6 +504,9 @@ for (j=0;j<param.ny;j++){
             e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
             B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]+e*param.Tg);
         }
+        elif(i!=0 && j==param.ny-1){
+            
+        }
     }
 }
 
