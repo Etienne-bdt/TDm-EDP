@@ -497,6 +497,15 @@ void creation_B(struct type_donneesc param, int NA, float dt, float **x, float *
 
 	
 
+for (j=0;j<param.ny;j++){
+    for(i=0;i<param.nx;i++){
+        k = i+j*param.nx;
+        if(i==0&&j!=param.ny-1){
+            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
+            B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]+e*param.Tg);
+        }
+    }
+}
 
 }
 
@@ -508,8 +517,9 @@ void miseajour_T(struct type_donneesc param,float **T0,float **T1,float *B)
 
 for (j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
-        T0[i][j] = B[i+j*param.nx-1];
-        T1[i][j] = B[i+j*param.nx-1];
+        k = i+j*param.nx;
+        T0[i][j] = B[k];
+        T1[i][j] = B[k];
     }
 }
 
