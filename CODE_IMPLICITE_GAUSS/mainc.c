@@ -7,7 +7,6 @@
 #include"subf.h"
 #include"VTSW.h"
 #include"data.h"
-#include <gaussij.h>
 
 
 int main()
@@ -94,7 +93,7 @@ if(param.i_solver==0)
 // Computation with the implicit scheme (Gauss method)
 if((param.i_solver)==1)
   {
-  printf("Simulation with the implicit solver Gauss...\n");
+  /*printf("Simulation with the implicit solver Gauss...\n");
 
   A=(float**)malloc((tailleMat)*sizeof(float *));
   for (int i=0;i<tailleMat;i++){A[i]=(float*)malloc((tailleMat)*sizeof(float));}
@@ -104,18 +103,24 @@ if((param.i_solver)==1)
 
 
   creation_A(param,NA,dt,x,y,xv,yv,vol,A);
-  if(l=1;l<N;l++){
-  calc_flux_advc(param,x,y,xv,yv,Y,V,T0,Fadv);
-  creation_B(param,NA,dt,x,y,xv,yv,vol,T0,B);
-  GAUSSIJ(LV,A,B);
-  miseajour_T(param,T0,T1,B);
+  for(l=1;l<N;l++){
+    calc_flux_advc(param,x,y,xv,yv,Y,V,T0,Fadv);
+    creation_B(param,NA,dt,x,y,xv,yv,vol,T0,B);
+    GAUSSIJ(LV,A,B);
+    miseajour_T(param,T0,T1,B);
       if((l%param.Nout)==0)
       {
-      VTSWriterc((float)(l)*dt,l,param.nx+1,param.ny+1,x,y,T1,U,V,"int");
+        VTSWriterc((float)(l)*dt,l,param.nx+1,param.ny+1,x,y,T1,U,V,"int");
       }
   }
   VTSWriterc((float)(N)*dt,N,param.nx+1,param.ny+1,x,y,T1,U,V,"end");
-  
+  */
+  int k;
+  creation_B(param,tailleMat,dt,x,y,xv,yv,vol,Fadv,T0,B);
+  /*for(k=1;k<tailleMat;k++){
+    
+    printf("%f",B[k]);
+  }*/
   free(A);
   free(B);
   }
@@ -139,7 +144,6 @@ if((param.i_solver)==2)
   X=(float*)malloc((tailleMat)*sizeof(float*));
 
   // (to be completed)
-  printf("not implemented\n");
 
 
   free(A);

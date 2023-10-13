@@ -13,7 +13,7 @@
  0.5            ! R:        Fourier's number (diffusion)
  0              ! i_mesh:   Switch for the regular/irregular mesh (0: reg, 1:irreg)
  1              ! i_vit:    Switch for the velocity (0: uniform, 1:parabolic)         
- 0              ! i_solver: Solver type (0: explicit, 1: implicit gauss, 2: SOR)
+ 1              ! i_solver: Solver type (0: explicit, 1: implicit gauss, 2: SOR)
  1.             ! W:        Over-relaxation coefficient (SOR method)
  1.e-5          ! R0:       Relative precision (SOR method)
 

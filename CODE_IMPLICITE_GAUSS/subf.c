@@ -443,32 +443,34 @@ for (i=0;i<param.nx;i++)
 //*********************************************
 void creation_A(struct type_donneesc param,int NA, float dt, float **x,float **y,float **xv,float **yv,float **vol,float **A)
 {
+int i,j,k;
+float a,b,c,d,e;
 for(j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
         if(i==0&&j==0){
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(x[i][j]/2)+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(y[i][j]/2));
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(y[i][j]/2); 
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
+            a =  (dt*param.D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(x[i][j]/2)+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(y[i][j]/2));
+            c = -(dt*param.D/vol[i][j])*(x[i+1][j]-x[i][j])/(y[i][j]/2); 
+            e = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
         }
-        elif(i==0&&j!=0){
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(x[i][j]/2)+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(yv[i][j-1])); 
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j-1]);
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
+        else if(i==0&&j!=0){
+            a =  (dt*param.D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(x[i][j]/2)+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(yv[i][j-1])); 
+            c = -(dt*param.D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j-1]);
+            e = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
         }
-        elif(i!=0&&j==0){
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(xv[i-1][j])+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(y[i][j]/2));
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(y[i][j]/2);  
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i-1][j]);
+        else if(i!=0&&j==0){
+            a =  (dt*param.D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(xv[i-1][j])+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(y[i][j]/2));
+            c = -(dt*param.D/vol[i][j])*(x[i+1][j]-x[i][j])/(y[i][j]/2);  
+            e = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i-1][j]);
         }
-        else:
-            a =  (dt*D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(xv[i-1][j])+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(yv[i][j-1]));
-            c = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j-1]);
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i-1][j]);
-
+        else {
+            a =  (dt*param.D/vol[i][j])*((y[i][j+1]-y[i][j])/(xv[i][j])+(y[i][j+1]-y[i][j])/(xv[i-1][j])+(x[i+1][j]-x[i][j])/(yv[i][j])+(x[i+1][j]-x[i][j])/(yv[i][j-1]));
+            c = -(dt*param.D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j-1]);
+            e = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i-1][j]);
+        }
        
         
-        b = -(dt*D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j]);
-        d = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i][j]);
+        b = -(dt*param.D/vol[i][j])*(x[i+1][j]-x[i][j])/(yv[i][j]);
+        d = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/(xv[i][j]);
 
         k = i+param.nx*j;
         A[k][k] = 1+a;
@@ -494,19 +496,17 @@ for(j=0;j<param.ny;j++){
 
 void creation_B(struct type_donneesc param, int NA, float dt, float **x, float **y,float **xv,float **yv,float **vol, float **Fadv, float **T0, float *B)
 {
-
+int i,j,k;
 	
-
+float a,b,c,d,e;
 for (j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
         k = i+j*param.nx;
         if(i==0&&j!=param.ny-1){
-            e = -(dt*D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
+            e = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
             B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]+e*param.Tg);
         }
-        elif(i!=0 && j==param.ny-1){
-            
-        }
+
     }
 }
 
@@ -517,6 +517,7 @@ for (j=0;j<param.ny;j++){
 
 void miseajour_T(struct type_donneesc param,float **T0,float **T1,float *B)
 {
+int i,j,k;
 
 for (j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
@@ -530,4 +531,75 @@ for (j=0;j<param.ny;j++){
 
 //***********************************
 
+//*******************************
+//
+//             RESOLUTION D'UN SYSTEME LINEAIRE
+//
+// METHODE : Methode de Gauss.
+//
+// LANGAGE : C
+//
+//  MODE D'UTILISATION :  GAUSSIJ (LV,A,B)
+//
+//  Donnees : A  Coefficients de la matrice, variable a deux dimensions
+//              dont les valeurs numeriques doivent etre fournies
+//              conformement au schema ci-dessous.
+//           B  Termes du 2eme membre, variable a un indice.
+//               A la sortie de GAUSS, la solution se trouve dans B.
+//            LV Ordre de la matrice A.
+//
+//        |                                                       |
+//        | A(1,1)       *                  *                    *|
+//        |  *                                                    |
+//        |                                                       |
+//        |                                                       |
+//        |                                                       |
+//        |                                                       |
+//        |                                                       |
+//        |                                                       |
+//        |                                                       |
+//        |                                                       |
+//        |                                                       |
+//        |  *                                    *       A(LV,LV)|
+//
+void GAUSSIJ(int LV, float **A, float *B){
+    
+    float **ATEMP;
+    int I,J,K;
+    float DIVB,BI,AKI;
+    ATEMP=(float**)malloc((LV)*sizeof(float *));
+    for (int I=0;I<LV;I++) {ATEMP[I]=(float*)malloc((LV)*sizeof(float));}
+
+    for(I=0; I<LV;I++){
+        for(J=0;J<LV;J++){
+            ATEMP[I][J]=A[I][J];
+        }
+    }
+    for(I=0; I<LV;I++){
+        DIVB=1.0/ATEMP[I][I];
+        B[I]=B[I]*DIVB;
+        BI=B[I];
+        for(J=LV-1; J>I-1;J--){
+            ATEMP[I][J]=ATEMP[I][J]*DIVB;
+        }
+        for(K=0;K<I;K++){
+            AKI=ATEMP[K][I];
+            B[K]=B[K]-AKI*BI;
+            for(J=LV-1;J>I-1;J--){
+                ATEMP[K][J]=ATEMP[K][J]-AKI*ATEMP[I][J];
+            }
+        }
+        for(K=I+1;K<LV;K++){
+            AKI=ATEMP[K][I];
+            B[K]=B[K]-AKI*BI;
+            for(J=LV-1;J>I-1;J--){
+                ATEMP[K][J]=ATEMP[K][J]-AKI*ATEMP[I][J];
+            }
+        }
+    }
+
+    return;
+
+}
+//
 
