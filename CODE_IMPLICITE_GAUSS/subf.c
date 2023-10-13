@@ -497,14 +497,26 @@ for(j=0;j<param.ny;j++){
 void creation_B(struct type_donneesc param, int NA, float dt, float **x, float **y,float **xv,float **yv,float **vol, float **Fadv, float **T0, float *B)
 {
 int i,j,k;
+int *l;
 	
 float a,b,c,d,e;
 for (j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
         k = i+j*param.nx;
+        printf("%d \n",k);
+
         if(i==0&&j!=param.ny-1){
-            e = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i][j]/2)); 
-            B[k] = T0[i][j]+((dt/vol[i][j])*Fadv[i][j]+e*param.Tg);
+            printf("%.10f \n",vol[i][j]);
+            printf("%.10f \n",x[i+1][j]);
+            printf("%.10f \n",x[i][j]);
+            printf("%.10f \n",y[i][j+1]);
+            printf("%.10f \n",y[i][j]);
+            printf("%.10f \n",((x[i+1][j]-x[i][j])*(y[i][j+1]-y[i][j])));
+
+            e = -(dt*param.D/vol[i][j])*(y[i][j+1]-y[i][j])/((x[i+1][j]/2)); 
+            printf("%f",e);
+            scanf("%d",l);
+            B[k] = 1;//T0[i][j]+((dt/vol[i][j])*Fadv[i][j]+e*param.Tg);
         }
 
     }

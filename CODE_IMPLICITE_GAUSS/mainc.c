@@ -93,7 +93,8 @@ if(param.i_solver==0)
 // Computation with the implicit scheme (Gauss method)
 if((param.i_solver)==1)
   {
-  /*printf("Simulation with the implicit solver Gauss...\n");
+    
+  printf("Simulation with the implicit solver Gauss...\n");
 
   A=(float**)malloc((tailleMat)*sizeof(float *));
   for (int i=0;i<tailleMat;i++){A[i]=(float*)malloc((tailleMat)*sizeof(float));}
@@ -102,7 +103,7 @@ if((param.i_solver)==1)
   B=(float*)malloc((tailleMat)*sizeof(float*));
 
 
-  creation_A(param,NA,dt,x,y,xv,yv,vol,A);
+  /*creation_A(param,NA,dt,x,y,xv,yv,vol,A);
   for(l=1;l<N;l++){
     calc_flux_advc(param,x,y,xv,yv,Y,V,T0,Fadv);
     creation_B(param,NA,dt,x,y,xv,yv,vol,T0,B);
