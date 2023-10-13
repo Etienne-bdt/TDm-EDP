@@ -446,59 +446,94 @@ void creation_A(struct type_donneesc param,int NA, float dt, float **x,float **y
 
 int i,j,k;
 float a,b,c,d,e;
-    float dx,dy;
+float dx,dy;
+
+for(i=0;i<NA;i++){
+    for(j=0;j<NA;j++){
+        A[i][j]=0;
+    }
+}
+
 for(j=0;j<param.ny;j++){
     for(i=0;i<param.nx;i++){
+        dx= x[i+1][j]-x[i][j];
+        dy= y[i][j+1]-y[i][j];
         if(i==0&&j==0){
             //Coin bas gauche
-            dx= x[i+1][j]-x[i][j];
-            dy= y[i][j+1]-y[i][j];
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i][j]/2)+(dx)/(yv[i][j])+(dx)/(y[i][j]/2));
-            c = -(dt*param.D/vol[i][j])*(dx)/(y[i][j]/2); 
+            a =  (dt*param.D/vol[i][j])*((dy/(xv[i][j]))+(dy/(x[i+1][j]/2))+(dx/(yv[i][j]))+(dx/(y[i][j+1]/2)));
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
+            c = 0;//Pris en compte dans B
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
             e=0; //Pris en compte dans B
         }
-        else if(i==0&&j!=0){//Frontière gauche
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i][j]/2)+(dx)/(yv[i][j])+(dx)/(yv[i][j-1])); 
+        else if(i==0&&j!=0<j!=param.ny-1){//Frontière gauche
+            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i+1][j]/2)+(dx)/(yv[i][j])+(dx)/(yv[i][j-1]));
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
             c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
             e=0;//Pris en compte dans B
+        }
+        else if(i==0&&j==param.ny-1){//Coin Haut Gauche
+            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i+1][j]/2)+(dx)/(yv[i][j-1]));
+            b =0;//Annulé
+            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
+            e=0;//Pris en compte dans B
+        }
+        else if(i!=0&&j==param.ny-1&&i!=param.nx-1){
+            //Frontière Haute
+            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j-1]));
+            b =0;//Annulé
+            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
+            e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]);
+        }
+        else if(i==param.nx-1&&j==param.ny-1){
+            //Coin Haut Droit
+            a =  (dt*param.D/vol[i][j])*((dx)/(yv[i][j-1]));
+            b=0;//Annulé
+            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
+            d=0;//Annulé
+            e=0;//Annulé
+        
+        }
+        else if(j!=0&&i==param.nx-1&&j!=param.ny-1){
+            //Frontière Droite
+            a =  (dt*param.D/vol[i][j])*((dx)/(yv[i][j])+(dx)/(yv[i][j-1]));
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
+            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
+            d = 0;//Annulé
+            e = 0;//Annulé
+        }
+        else if(i==param.ny-1&&j==0){
+            //Coin Bas Droit
+            a =  (dt*param.D/vol[i][j])*((dx)/(yv[i][j])+(dx)/(y[i][j+1]/2));
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
+            c = 0;//Pris en compte dans B
+            d = 0;//Annulé
+            e = 0;//Annulé
+
         }
         else if(i!=0&&j==0){
             //Frontière basse
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j])+(dx)/(y[i][j]/2));
-            c = 0; //Pris en compte dans B  
+            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j])+(dx)/(y[i][j+1]/2));
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
+            c = 0; //Pris en compte dans B 
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
             e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]);
-        }
-        else if(i==0&&j==param.ny-1){//Coin Haut Gauche
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j-1]));
-            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
-            e=0;//Pris en compte dans B
         }
         else{
             a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j])+(dx)/(yv[i][j-1]));
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
             c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
             e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]);
         }
        
-        if(j==param.ny-1){//frontière haute
-        b=0;}
-        else{
-        b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
-        }
-        d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
-      k = i+param.nx*j;
-        A[k][k] = 1+a;
-        if(k<param.nx-1){
-        A[k][k+1] = d;
-        }
-        if(k>1){
-        A[k][k-1] = e;
-        }
-        if(k< param.nx*param.ny-1-param.nx){
-        A[k][k+param.nx] = b;
-        }
-        if(k+param.nx>0){
-        A[k][k-param.nx] = c;
-        } 
+        //Assignation des valeurs de A
+        k = i+j*param.nx;
+        A[k][k]=1+a;
+
     }
 }
 }

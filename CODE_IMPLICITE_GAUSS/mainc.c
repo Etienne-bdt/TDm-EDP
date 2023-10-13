@@ -103,8 +103,17 @@ if((param.i_solver)==1)
   B=(float*)malloc((tailleMat)*sizeof(float*));
 
 
-  /*creation_A(param,NA,dt,x,y,xv,yv,vol,A);
-  for(l=1;l<N;l++){
+  creation_A(param,tailleMat,dt,x,y,xv,yv,vol,A);
+  int i,j;
+
+  printf("A = \n");
+  for(i=0;i<tailleMat;i++){
+    for(j=0;j<tailleMat;j++){
+      printf("%0.2E   ",A[i][j]);
+    }
+    printf("\n");
+  }
+  /*for(l=1;l<N;l++){
     calc_flux_advc(param,x,y,xv,yv,Y,V,T0,Fadv);
     creation_B(param,NA,dt,x,y,xv,yv,vol,T0,B);
     GAUSSIJ(LV,A,B);
@@ -118,6 +127,7 @@ if((param.i_solver)==1)
   */
   int k;
   creation_B(param,tailleMat,dt,x,y,xv,yv,vol,Fadv,T0,B);
+  
   /*for(k=1;k<tailleMat;k++){
     
     printf("%f",B[k]);
