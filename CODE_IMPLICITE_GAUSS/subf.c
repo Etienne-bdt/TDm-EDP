@@ -469,7 +469,7 @@ for(j=0;j<param.ny;j++){
         {
         case 0:
             d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]*2);
-            e = -(dt*param.D/vol[i][j])*(dy)/(x[i+1][j]);
+            e = -(dt*param.D/vol[i][j])*(dy)/(x[i+1][j]/2);
             break;
         
         case 1:
@@ -487,7 +487,7 @@ for(j=0;j<param.ny;j++){
         {
         case 0:
             b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]*2);
-            c = -(dt*param.D/vol[i][j])*(dx)/(y[i][j+1]);
+            c = -(dt*param.D/vol[i][j])*(dx)/(y[i][j+1]/2);
             break;
         
         case 1:
@@ -512,7 +512,7 @@ for(j=0;j<param.ny;j++){
             e = 0;//Pris en compte dans B
         }
         else if(i==0&&j==param.ny-1){//Coin Haut Gauche
-            b =0;//Annulé
+            b = 0;//Annulé
             a =  -(b+c+d+e);
             e = 0;//Pris en compte dans B
         }
