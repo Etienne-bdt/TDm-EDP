@@ -487,7 +487,7 @@ for(j=0;j<param.ny;j++){
             b =0;//Annulé
             c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
             d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
-            e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]);
+            e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]-xv[i-2][j]);
         }
         else if(i==param.nx-1&&j==param.ny-1){
             //Coin Haut Droit
@@ -517,8 +517,7 @@ for(j=0;j<param.ny;j++){
         }
         else if(i!=0&&j==0){
             //Frontière basse
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j])+(dx)/(y[i][j+1]/2));
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]/2);
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]*2);
             c = 0; //Pris en compte dans B 
             d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]-xv[i-1][j]);
             if(i==1){
@@ -529,11 +528,22 @@ for(j=0;j<param.ny;j++){
             }
         }
         else{
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j])+(dx)/(yv[i][j-1]));
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
-            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
-            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
-            e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]);
+            
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]-yv[i][j-1]);
+            if(j==1){
+                c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]*2);
+            }
+            else{
+                c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]-yv[i][j-2]);
+            }
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]-xv[i-1][j]);
+            if(i==1){
+                e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]*2);
+            }
+            else{
+                e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]-xv[i-2][j]);
+            }
+            a = -(b+c+d+e);
         }
        
         //Assignation des valeurs de A
