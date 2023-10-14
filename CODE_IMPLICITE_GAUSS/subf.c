@@ -507,12 +507,12 @@ for(j=0;j<param.ny;j++){
             c = 0;//Pris en compte dans B
             e = 0; //Pris en compte dans B
         }
-        else if(i==0&&j!=0<j!=param.ny-1){//Frontière gauche
+        else if(i==0&&j!=0&&j!=param.ny-1){//Frontière gauche
             a = -(b+c+d+e);
             e = 0;//Pris en compte dans B
         }
         else if(i==0&&j==param.ny-1){//Coin Haut Gauche
-            b = 0;//Annulé
+            b =0;//Annulé
             a =  -(b+c+d+e);
             e = 0;//Pris en compte dans B
         }
