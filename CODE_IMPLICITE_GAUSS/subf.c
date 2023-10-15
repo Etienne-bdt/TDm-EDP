@@ -459,101 +459,117 @@ for(j=0;j<param.ny;j++){
         dx= x[i+1][j]-x[i][j];
         dy= y[i][j+1]-y[i][j];
 
+        //Dans ce code, on se propose de créer la matrice A en commencant par ses coefficients. 
+        //Il est à noter que les coefficients a,b,c,d,e sont reliés par une relation linéaire de sorte que
+        //a = - (b+c+d+e) dans le cas général. Dans certains cas cette relation devient fausse si l'un des termes
+        //est pris en compte dans B, pour pallier à ce problème, nous allons le calculer de la même façon que dans B, 
+        //le prendre en compte dans a puis l'annuler.
+
+        switch (i)
+        {
+        case 0:
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]*2);
+            e = -(dt*param.D/vol[i][j])*(dy)/(x[i+1][j]/2);
+            break;
+        
+        case 1:
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]-xv[i-1][j]);
+            e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]*2);
+            break;
+
+        default:
+            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]-xv[i-1][j]);
+            e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]-xv[i-2][j]);
+            break;
+        }
+
+        switch (j)
+        {
+        case 0:
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]*2);
+            c = -(dt*param.D/vol[i][j])*(dx)/(y[i][j+1]/2);
+            break;
+        
+        case 1:
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]-yv[i][j-1]);
+            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]*2);
+            break;
+
+        default:
+            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]-yv[i][j-1]);
+            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]-yv[i][j-2]);
+            break;
+        }
+
         if(i==0&&j==0){
             //Coin bas gauche
-            a =  (dt*param.D/vol[i][j])*((dy/(xv[i][j]))+(dy/(x[i+1][j]/2))+(dx/(yv[i][j]))+(dx/(y[i][j+1]/2)));
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
+            a = -(b+c+d+e);
             c = 0;//Pris en compte dans B
-            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
-            e=0; //Pris en compte dans B
+            e = 0; //Pris en compte dans B
         }
-        else if(i==0&&j!=0<j!=param.ny-1){//Frontière gauche
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i+1][j]/2)+(dx)/(yv[i][j])+(dx)/(yv[i][j-1]));
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
-            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
-            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
-            e=0;//Pris en compte dans B
+        else if(i==0&&j!=0&&j!=param.ny-1){//Frontière gauche
+            a = -(b+c+d+e);
+            e = 0;//Pris en compte dans B
         }
         else if(i==0&&j==param.ny-1){//Coin Haut Gauche
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(x[i+1][j]/2)+(dx)/(yv[i][j-1]));
             b =0;//Annulé
-            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
-            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
-            e=0;//Pris en compte dans B
+            a =  -(b+c+d+e);
+            e = 0;//Pris en compte dans B
         }
         else if(i!=0&&j==param.ny-1&&i!=param.nx-1){
             //Frontière Haute
-            a =  (dt*param.D/vol[i][j])*((dy)/(xv[i][j])+(dy)/(xv[i-1][j])+(dx)/(yv[i][j-1]));
-            b =0;//Annulé
-            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
-            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]);
-            e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]-xv[i-2][j]);
+            b = 0;//Annulé
+            a = -(b+c+d+e);
         }
         else if(i==param.nx-1&&j==param.ny-1){
             //Coin Haut Droit
-            a =  (dt*param.D/vol[i][j])*((dx)/(yv[i][j-1]));
-            b=0;//Annulé
-            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
-            d=0;//Annulé
-            e=0;//Annulé
+            b = 0;//Annulé
+            d = 0;//Annulé
+            e = 0;//Annulé
+            a = -(b+c+d+e);
         
         }
         else if(j!=0&&i==param.nx-1&&j!=param.ny-1){
             //Frontière Droite
-            a =  (dt*param.D/vol[i][j])*((dx)/(yv[i][j])+(dx)/(yv[i][j-1]));
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
-            c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]);
             d = 0;//Annulé
             e = 0;//Annulé
+            a = -(b+c+d+e);
         }
         else if(i==param.ny-1&&j==0){
             //Coin Bas Droit
-            a =  (dt*param.D/vol[i][j])*((dx)/(yv[i][j])+(dx)/(y[i][j+1]/2));
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]);
-            c = 0;//Pris en compte dans B
             d = 0;//Annulé
             e = 0;//Annulé
-
+            a = -(b+c+d+e);
+            c = 0;//Pris en compte dans B
         }
         else if(i!=0&&j==0){
             //Frontière basse
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]*2);
+            a = -(b+c+d+e);
             c = 0; //Pris en compte dans B 
-            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]-xv[i-1][j]);
-            if(i==1){
-                e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]*2);
-            }
-            else{
-                e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]-xv[i-2][j]);
-            }
         }
         else{
-            
-            b = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j]-yv[i][j-1]);
-            if(j==1){
-                c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]*2);
-            }
-            else{
-                c = -(dt*param.D/vol[i][j])*(dx)/(yv[i][j-1]-yv[i][j-2]);
-            }
-            d = -(dt*param.D/vol[i][j])*(dy)/(xv[i][j]-xv[i-1][j]);
-            if(i==1){
-                e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]*2);
-            }
-            else{
-                e = -(dt*param.D/vol[i][j])*(dy)/(xv[i-1][j]-xv[i-2][j]);
-            }
+            //Cas général
             a = -(b+c+d+e);
         }
-       
+        
         //Assignation des valeurs de A
         k = i+j*param.nx;
+        
         if (k>0){
             A[k][k-1] = e;
         }
-        
+        if (k<param.nx*param.ny){
+            A[k][k+1] = d;
+        }
+        if(k>param.nx-1){ 
+            A[k][k-param.nx] = c;
+        }
+        if(k<param.ny*param.nx-1){
+            A[k][k+param.nx] = b;
+        }
+        A[k][k]=1+a;
+        }
     }
-}
 }
 
 
@@ -602,9 +618,8 @@ for (j=0;j<param.ny;j++){
             
         }
         printf("%f \n", B[k]);
+        }
     }
-}
-
 }
 
 
