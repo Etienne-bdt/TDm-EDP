@@ -1,5 +1,5 @@
- 4             ! nx:       number of cells in x-direction
- 4             ! ny:       number of cells in y-direction
+ 30             ! nx:       number of cells in x-direction
+ 10             ! ny:       number of cells in y-direction
  3.e-3          ! Lx:       length of the domain (m)
  250.e-6        ! Ly:       height of the domain (m)
  5.e-2          ! U0:       characteristic parameter for the velocity (s^-1)
@@ -7,13 +7,13 @@
  20.            ! Ti:       Initial temperature in the domain (Celsius)
  20.            ! Tg:       Temperature at the left (Celsius)
  50.            ! Tb:       Temperature at the bottom (Celsius)
- 1.e-3          ! tf:       final time (s)
+ 2.e-3          ! tf:       final time (s)
  1              ! Nout:     number of intermediate unsaved time steps 
  1              ! CFL:      Courant's number (advection)
  5.0            ! R:        Fourier's number (diffusion)
- 0              ! i_mesh:   Switch for the regular/irregular mesh (0: reg, 1:irreg)
+ 1              ! i_mesh:   Switch for the regular/irregular mesh (0: reg, 1:irreg)
  0             ! i_vit:    Switch for the velocity (0: uniform, 1:parabolic)         
- 1              ! i_solver: Solver type (0: explicit, 1: implicit gauss, 2: SOR)
+ 2              ! i_solver: Solver type (0: explicit, 1: implicit gauss, 2: SOR)
  1.             ! W:        Over-relaxation coefficient (SOR method)
  1.e-5          ! R0:       Relative precision (SOR method)
 

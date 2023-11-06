@@ -95,6 +95,9 @@ if((param.i_solver)==1)
   {
     
   printf("Simulation with the implicit solver Gauss...\n");
+  printf("N=%d\n",N);
+
+printf("Nout=%d\n",param.Nout);
 
   A=(float**)malloc((tailleMat)*sizeof(float *));
   for (int i=0;i<tailleMat;i++){A[i]=(float*)malloc((tailleMat)*sizeof(float));}
@@ -104,34 +107,23 @@ if((param.i_solver)==1)
 
 
   creation_A(param,tailleMat,dt,x,y,xv,yv,vol,A);
-  int i,j;
 
-  printf("A = \n");
-  for(i=0;i<tailleMat;i++){
-    for(j=0;j<tailleMat;j++){
-      printf("%0.2E   ",A[i][j]);
-    }
-    printf("\n");
-  }
-  /*for(l=1;l<N;l++){
-    calc_flux_advc(param,x,y,xv,yv,Y,V,T0,Fadv);
-    creation_B(param,NA,dt,x,y,xv,yv,vol,T0,B);
-    GAUSSIJ(LV,A,B);
+
+  for(l=1;l<=N;l++){
+    printf("STEP %i \n",l);
+    calc_flux_advc(param,x,y,xv,yv,U,V,T0,Fadv);
+    creation_B(param,tailleMat,dt,x,y,xv,yv,vol,Fadv,T0,B);
+    GAUSSIJ(tailleMat,A,B);
     miseajour_T(param,T0,T1,B);
+    advance_timec(param,dt,vol,Fadv,Fdiff,T0,T1);
       if((l%param.Nout)==0)
       {
         VTSWriterc((float)(l)*dt,l,param.nx+1,param.ny+1,x,y,T1,U,V,"int");
       }
   }
   VTSWriterc((float)(N)*dt,N,param.nx+1,param.ny+1,x,y,T1,U,V,"end");
-  */
-  int k;
-  creation_B(param,tailleMat,dt,x,y,xv,yv,vol,Fadv,T0,B);
   
-  /*for(k=1;k<tailleMat;k++){
-    
-    printf("%f",B[k]);
-  }*/
+
   free(A);
   free(B);
   }
@@ -153,10 +145,27 @@ if((param.i_solver)==2)
   for (int i=0;i<tailleMat;i++){AB[i]=(float*)malloc((LB)*sizeof(float));}
   if (AB==NULL) {printf("Allocation failed for AB");}
   X=(float*)malloc((tailleMat)*sizeof(float*));
+  creation_A(param,tailleMat,dt,x,y,xv,yv,vol,A);
+  create_A_band(param.nx, tailleMat, A, AB);
+  
 
-  // (to be completed)
 
 
+
+  for(l=1;l<=N;l++){
+    printf("STEP %i \n",l);
+    calc_flux_advc(param,x,y,xv,yv,U,V,T0,Fadv);
+    creation_B(param,tailleMat,dt,x,y,xv,yv,vol,Fadv,T0,B);
+    SOR(param.nx,tailleMat, AB, B,param.R0,param.W,X);
+    miseajour_T(param,T0,T1,X);
+    advance_timec(param,dt,vol,Fadv,Fdiff,T0,T1);
+      if((l%param.Nout)==0)
+      {
+        VTSWriterc((float)(l)*dt,l,param.nx+1,param.ny+1,x,y,T1,U,V,"int");
+      }
+  }
+  VTSWriterc((float)(N)*dt,N,param.nx+1,param.ny+1,x,y,T1,U,V,"end");
+  
   free(A);
   free(B);
   free(AB);
@@ -174,6 +183,7 @@ free(Fadv);
 free(Fdiff);
 
 printf("Simulation done\n");
+
 printf("dt = %e \n",dt);
 return 0;
 
